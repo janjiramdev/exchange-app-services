@@ -1,19 +1,20 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninDto } from './dtos/signin.dto';
-import { IAuthTokens } from 'src/interfaces/auth.interface';
 import { SignupDto } from './dtos/signup.dto';
-import { ExternalUser } from 'src/databases/user';
+import { RefreshDto } from './dtos/refresh.dto';
 import { AccessTokenGuard } from './guards/access-token-guard';
 import { CurrentUser } from 'src/decorators/current-user-decorator';
-import { RefreshDto } from './dtos/refresh.dto';
+import { IAuthTokens } from 'src/interfaces/auth.interface';
+import { IUserInterface } from 'src/interfaces/user.interface';
+import { UserDocument } from 'src/schemas/user.schema';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body() body: SignupDto): Promise<ExternalUser> {
+  async signup(@Body() body: SignupDto): Promise<UserDocument> {
     return await this.authService.signup(body);
   }
 
@@ -24,7 +25,7 @@ export class AuthController {
 
   @UseGuards(AccessTokenGuard)
   @Post('signout')
-  async signout(@CurrentUser() user: ExternalUser): Promise<string> {
+  async signout(@CurrentUser() user: IUserInterface): Promise<string> {
     return await this.authService.signout(user.username);
   }
 

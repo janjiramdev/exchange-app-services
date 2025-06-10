@@ -1,56 +1,50 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { ExternalUser, mockUsers, User } from 'src/databases/user';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import {
   IInsertOneUserInput,
   IUpdateOneUserRefreshTokenInput,
 } from 'src/interfaces/user.interface';
+import { User, UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
 export class UsersService {
   private readonly logger: Logger;
 
-  // Mockup users data
-  private users: User[] = [];
-
-  constructor() {
+  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {
     this.logger = new Logger(UsersService.name);
-    this.users = mockUsers;
   }
 
-  async insertOne(input: IInsertOneUserInput): Promise<User> {
-    // Mockup process duration
-    await new Promise((resolve) => setTimeout(resolve, 250));
-
-    const { username, password } = input;
-
-    const user = {
-      id: String(this.users.length + 1),
-      username,
-      password,
-    };
-    this.users.push(user);
-
-    return user;
+  async insertOne(input: IInsertOneUserInput): Promise<UserDocument> {
+    return await this.userModel
+      .create({
+        ...input,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      })
+      .then((result) => {
+        const formattedResult = result.toObject() as Record<string, any>;
+        delete formattedResult.password;
+        return formattedResult as UserDocument;
+      });
   }
 
-  async findOneByUsername(input: string): Promise<User | undefined> {
-    // Mockup process duration
-    await new Promise((resolve) => setTimeout(resolve, 250));
-
-    return this.users.find((user) => user.username === input);
+  async findOneByUsername(
+    input: string,
+  ): Promise<UserDocument | null | undefined> {
+    return await this.userModel
+      .findOne({ username: input })
+      .select(['+password', '+refreshToken']);
   }
 
-  async findOneById(input: string): Promise<ExternalUser> {
+  async findOneById(input: string): Promise<UserDocument> {
     try {
-      // Mockup process duration
-      await new Promise((resolve) => setTimeout(resolve, 250));
-
-      const user = this.users.find((user) => user.id === input);
+      const user = await this.userModel.findOne({ _id: input });
       if (!user)
         throw new NotFoundException(`user with id: ${input} not found`);
 
-      return plainToInstance(ExternalUser, user);
+      return user;
     } catch (error: unknown) {
       if (error instanceof Error)
         this.logger.error(error.stack ? error.stack : error.message);
@@ -62,11 +56,10 @@ export class UsersService {
   async updateOneUserRefreshToken(
     input: IUpdateOneUserRefreshTokenInput,
   ): Promise<void> {
-    // Mockup process duration
-    await new Promise((resolve) => setTimeout(resolve, 250));
-
-    const { id, refreshToken } = input;
-    const findUserIndex = this.users.findIndex((user) => user.id === id);
-    this.users[findUserIndex] = { ...this.users[findUserIndex], refreshToken };
+    const { _id, refreshToken } = input;
+    await this.userModel.findOneAndUpdate(
+      { _id },
+      { refreshToken, updatedAt: new Date() },
+    );
   }
 }

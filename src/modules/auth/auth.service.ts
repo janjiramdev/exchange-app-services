@@ -5,21 +5,20 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SigninDto } from './dtos/signin.dto';
-import { IAuthTokenDetail, IAuthTokens } from 'src/interfaces/auth.interface';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { EncodeUtil } from 'src/utils/encode.util';
-import { ExternalUser, User } from 'src/databases/user';
+import { SigninDto } from './dtos/signin.dto';
 import { SignupDto } from './dtos/signup.dto';
-import { IInsertOneUserInput } from 'src/interfaces/user.interface';
-import { plainToInstance } from 'class-transformer';
 import { RefreshDto } from './dtos/refresh.dto';
+import { UsersService } from '../users/users.service';
 import {
   CJwtExpiredErrorMessage,
   CJwtInvalidErrorMessage,
 } from 'src/constants/auth.constant';
+import { IAuthTokenDetail, IAuthTokens } from 'src/interfaces/auth.interface';
+import { IInsertOneUserInput } from 'src/interfaces/user.interface';
+import { UserDocument } from 'src/schemas/user.schema';
+import { EncodeUtil } from 'src/utils/encode.util';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +34,7 @@ export class AuthService {
     this.encodeUtil = new EncodeUtil();
   }
 
-  async signup(input: SignupDto): Promise<ExternalUser> {
+  async signup(input: SignupDto): Promise<UserDocument> {
     const { username, password } = input;
 
     try {
@@ -50,9 +49,8 @@ export class AuthService {
         username,
         password: await this.encodeUtil.hash(password),
       };
-      const insertedUser = await this.usersService.insertOne(user);
 
-      return plainToInstance(ExternalUser, insertedUser);
+      return await this.usersService.insertOne(user);
     } catch (error: unknown) {
       if (error instanceof Error)
         this.logger.error(error.stack ? error.stack : error.message);
@@ -79,7 +77,7 @@ export class AuthService {
 
       const tokens = await this.generateTokens(user);
       await this.usersService.updateOneUserRefreshToken({
-        id: user.id,
+        _id: String(user._id),
         refreshToken: await this.encodeUtil.hash(tokens.refreshToken),
       });
 
@@ -99,7 +97,7 @@ export class AuthService {
         throw new NotFoundException(`user with username: ${input} not found`);
 
       await this.usersService.updateOneUserRefreshToken({
-        id: user.id,
+        _id: String(user._id),
         refreshToken: '',
       });
 
@@ -111,6 +109,7 @@ export class AuthService {
       throw error;
     }
   }
+
   async refresh(input: RefreshDto): Promise<IAuthTokens> {
     const { refreshToken } = input;
 
@@ -141,7 +140,7 @@ export class AuthService {
 
       const tokens = await this.generateTokens(user);
       await this.usersService.updateOneUserRefreshToken({
-        id: user.id,
+        _id: String(user._id),
         refreshToken: await this.encodeUtil.hash(tokens.refreshToken),
       });
 
@@ -160,11 +159,11 @@ export class AuthService {
     }
   }
 
-  private async generateTokens(input: User): Promise<IAuthTokens> {
-    const { id, username } = input;
+  private async generateTokens(input: UserDocument): Promise<IAuthTokens> {
+    const { _id, username } = input;
 
     const accessToken = await this.jwtService.signAsync(
-      { sub: id, username },
+      { sub: _id, username },
       {
         secret: this.configService.get<string>('jwt.accessTokenSecret'),
         expiresIn: this.configService.get<string>('jwt.accessTokenExpireTime'),
@@ -172,7 +171,7 @@ export class AuthService {
       },
     );
     const refreshToken = await this.jwtService.signAsync(
-      { sub: id, username },
+      { sub: _id, username },
       {
         secret: this.configService.get<string>('jwt.refreshTokenSecret'),
         expiresIn: this.configService.get<string>('jwt.refreshTokenExpireTime'),
