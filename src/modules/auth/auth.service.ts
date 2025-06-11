@@ -16,7 +16,7 @@ import {
   CJwtInvalidErrorMessage,
 } from 'src/constants/auth.constant';
 import { IAuthTokenDetail, IAuthTokens } from 'src/interfaces/auth.interface';
-import { IInsertOneUserInput } from 'src/interfaces/user.interface';
+import { ICreateOneUserInput } from 'src/interfaces/user.interface';
 import { UserDocument } from 'src/schemas/user.schema';
 import { EncodeUtil } from 'src/utils/encode.util';
 
@@ -38,19 +38,18 @@ export class AuthService {
     const { username, password } = input;
 
     try {
-      const findExistingUser =
-        await this.usersService.findOneByUsername(username);
-      if (findExistingUser)
+      const existingUser = await this.usersService.findOneByUsername(username);
+      if (existingUser)
         throw new BadRequestException(
           `user with username: ${username} already exits`,
         );
 
-      const user: IInsertOneUserInput = {
+      const user: ICreateOneUserInput = {
         username,
         password: await this.encodeUtil.hash(password),
       };
 
-      return await this.usersService.insertOne(user);
+      return await this.usersService.createOne(user);
     } catch (error: unknown) {
       if (error instanceof Error)
         this.logger.error(error.stack ? error.stack : error.message);

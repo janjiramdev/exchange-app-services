@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
-  IInsertOneUserInput,
+  ICreateOneUserInput,
   IUpdateOneUserRefreshTokenInput,
 } from 'src/interfaces/user.interface';
 import { User, UserDocument } from 'src/schemas/user.schema';
@@ -15,7 +15,7 @@ export class UsersService {
     this.logger = new Logger(UsersService.name);
   }
 
-  async insertOne(input: IInsertOneUserInput): Promise<UserDocument> {
+  async createOne(input: ICreateOneUserInput): Promise<UserDocument> {
     return await this.userModel
       .create({
         ...input,
@@ -34,13 +34,18 @@ export class UsersService {
     input: string,
   ): Promise<UserDocument | null | undefined> {
     return await this.userModel
-      .findOne({ username: input })
+      .findOne({ username: input, deletedAt: null })
       .select(['+password', '+refreshToken']);
   }
 
   async findOneById(input: string): Promise<UserDocument> {
     try {
-      const user = await this.userModel.findOne({ _id: input });
+      const user = await this.userModel
+        .findOne({
+          _id: input,
+          deletedAt: null,
+        })
+        .exec();
       if (!user)
         throw new NotFoundException(`user with id: ${input} not found`);
 
@@ -57,9 +62,11 @@ export class UsersService {
     input: IUpdateOneUserRefreshTokenInput,
   ): Promise<void> {
     const { _id, refreshToken } = input;
-    await this.userModel.findOneAndUpdate(
-      { _id },
-      { refreshToken, updatedAt: new Date() },
-    );
+    await this.userModel
+      .findOneAndUpdate(
+        { _id, deletedAt: null },
+        { refreshToken, updatedAt: new Date() },
+      )
+      .exec();
   }
 }

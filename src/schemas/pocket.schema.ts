@@ -1,28 +1,27 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import { Coin } from './coin.schema';
+import { User } from './user.schema';
 
-@Schema({ collection: 'users' })
-export class User {
-  @Prop({ type: String, unique: true, required: true, nullable: false })
-  username: string;
-
+@Schema({ collection: 'pockets' })
+export class Pocket {
   @Prop({
-    type: String,
+    type: Types.ObjectId,
     unique: false,
     required: true,
     nullable: false,
-    select: false,
+    ref: 'User',
   })
-  password: string;
+  user: User;
 
   @Prop({
-    type: String,
+    type: Types.ObjectId,
     unique: false,
-    required: false,
-    nullable: true,
-    select: false,
+    required: true,
+    nullable: false,
+    ref: 'Coin',
   })
-  refreshToken?: string;
+  coin: Coin;
 
   @Prop({
     type: Number,
@@ -31,16 +30,7 @@ export class User {
     nullable: false,
     default: 0,
   })
-  balanceUSD: number;
-
-  @Prop({
-    type: Number,
-    unique: false,
-    required: true,
-    nullable: false,
-    default: 0,
-  })
-  balanceTHB: number;
+  amount: number;
 
   // ----- ----- ----- Timestamp ----- ----- ----- //
 
@@ -69,5 +59,5 @@ export class User {
   deletedAt?: Date;
 }
 
-export type UserDocument = HydratedDocument<User>;
-export const UserSchema = SchemaFactory.createForClass(User);
+export type PocketDocument = HydratedDocument<Pocket>;
+export const PocketSchema = SchemaFactory.createForClass(Pocket);

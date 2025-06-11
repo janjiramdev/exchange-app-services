@@ -3,7 +3,7 @@ export interface IUserInterface {
   username: string;
 }
 
-export interface IInsertOneUserInput {
+export interface ICreateOneUserInput {
   username: string;
   password: string;
 }
