@@ -42,7 +42,7 @@ export class User {
   })
   balanceTHB: number;
 
-  // ----- ----- ----- Timestamp ----- ----- ----- //
+  // ----- ----- ----- Timestamps ----- ----- ----- //
 
   @Prop({
     type: Date,

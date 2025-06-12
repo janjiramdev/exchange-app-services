@@ -11,7 +11,7 @@ export class Coin {
   })
   name: string;
 
-  // ----- ----- ----- Timestamp ----- ----- ----- //
+  // ----- ----- ----- Timestamps ----- ----- ----- //
 
   @Prop({
     type: Date,

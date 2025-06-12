@@ -33,6 +33,8 @@ export class Balance {
   })
   currency: ECurrency;
 
+  // ----- ----- ----- Relations ----- ----- ----- //
+
   @Prop({
     type: Types.ObjectId,
     unique: false,
@@ -42,7 +44,7 @@ export class Balance {
   })
   sale?: SaleDocument;
 
-  // ----- ----- ----- Timestamp ----- ----- ----- //
+  // ----- ----- ----- Timestamps ----- ----- ----- //
 
   @Prop({
     type: Date,

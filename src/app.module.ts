@@ -7,6 +7,7 @@ import { CoinsModule } from './modules/coins/coins.module';
 import { PocketsModule } from './modules/pockets/pockets.module';
 import { SalesModule } from './modules/sales/sales.module';
 import { SystemModule } from './modules/system/system.module';
+import { TransfersModule } from './modules/transfers/transfers.module';
 import { UsersModule } from './modules/users/users.module';
 import systemConfig from './configs/system';
 
@@ -29,6 +30,7 @@ import systemConfig from './configs/system';
     PocketsModule,
     SalesModule,
     SystemModule,
+    TransfersModule,
     UsersModule,
   ],
 })

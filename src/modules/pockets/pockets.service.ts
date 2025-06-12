@@ -20,7 +20,7 @@ export class PocketsService {
 
   constructor(
     @InjectModel(Pocket.name)
-    private readonly pocketModel: Model<PocketDocument>,
+    private readonly pocketModel: Model<Pocket>,
     private readonly coinsService: CoinsService,
   ) {
     this.logger = new Logger(PocketsService.name);

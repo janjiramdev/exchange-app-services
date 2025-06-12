@@ -7,15 +7,6 @@ import { ESalesStatus } from 'src/enums/sales.enum';
 @Schema({ collection: 'sales' })
 export class Sale {
   @Prop({
-    type: Types.ObjectId,
-    unique: false,
-    required: true,
-    nullable: false,
-    ref: 'Pocket',
-  })
-  sellerPocket: PocketDocument;
-
-  @Prop({
     type: Number,
     unique: false,
     required: true,
@@ -51,6 +42,17 @@ export class Sale {
   })
   status: ESalesStatus;
 
+  // ----- ----- ----- Relations ----- ----- ----- //
+
+  @Prop({
+    type: Types.ObjectId,
+    unique: false,
+    required: true,
+    nullable: false,
+    ref: 'Pocket',
+  })
+  sellerPocket: PocketDocument;
+
   @Prop({
     type: Types.ObjectId,
     unique: false,
@@ -78,7 +80,7 @@ export class Sale {
   })
   buyerBalance?: BalanceDocument;
 
-  // ----- ----- ----- Timestamp ----- ----- ----- //
+  // ----- ----- ----- Timestamps ----- ----- ----- //
 
   @Prop({
     type: Date,

@@ -21,7 +21,7 @@ export class BalanceService {
 
   constructor(
     @InjectModel(Balance.name)
-    private readonly balanceModel: Model<BalanceDocument>,
+    private readonly balanceModel: Model<Balance>,
     @Inject(forwardRef(() => SalesService))
     private readonly salesService: SalesService,
     private readonly usersService: UsersService,

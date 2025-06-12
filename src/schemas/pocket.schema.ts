@@ -6,6 +6,17 @@ import { UserDocument } from './user.schema';
 @Schema({ collection: 'pockets' })
 export class Pocket {
   @Prop({
+    type: Number,
+    unique: false,
+    required: true,
+    nullable: false,
+    default: 0,
+  })
+  amount: number;
+
+  // ----- ----- ----- Relations ----- ----- ----- //
+
+  @Prop({
     type: Types.ObjectId,
     unique: false,
     required: true,
@@ -23,16 +34,7 @@ export class Pocket {
   })
   coin: CoinDocument;
 
-  @Prop({
-    type: Number,
-    unique: false,
-    required: true,
-    nullable: false,
-    default: 0,
-  })
-  amount: number;
-
-  // ----- ----- ----- Timestamp ----- ----- ----- //
+  // ----- ----- ----- Timestamps ----- ----- ----- //
 
   @Prop({
     type: Date,

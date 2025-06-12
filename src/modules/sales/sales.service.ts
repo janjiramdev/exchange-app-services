@@ -27,7 +27,7 @@ export class SalesService {
 
   constructor(
     @InjectModel(Sale.name)
-    private readonly saleModel: Model<SaleDocument>,
+    private readonly saleModel: Model<Sale>,
     @Inject(forwardRef(() => BalanceService))
     private readonly balanceService: BalanceService,
     private readonly configService: ConfigService,
