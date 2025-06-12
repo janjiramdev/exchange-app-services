@@ -84,4 +84,12 @@ export class UsersService {
       )
       .exec();
   }
+
+  async seederRemove(): Promise<void> {
+    await this.userModel.deleteMany();
+  }
+
+  async seederInsert(input: User[]): Promise<void> {
+    await this.userModel.create(input);
+  }
 }

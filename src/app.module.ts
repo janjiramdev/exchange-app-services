@@ -10,6 +10,7 @@ import { SystemModule } from './modules/system/system.module';
 import { TransfersModule } from './modules/transfers/transfers.module';
 import { UsersModule } from './modules/users/users.module';
 import systemConfig from './configs/system';
+import { SeederModule } from './seeders/seeder.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import systemConfig from './configs/system';
     CoinsModule,
     PocketsModule,
     SalesModule,
+    SeederModule,
     SystemModule,
     TransfersModule,
     UsersModule,

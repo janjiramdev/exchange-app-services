@@ -42,4 +42,12 @@ export class CoinsService {
   async findOneById(input: string): Promise<CoinDocument | null | undefined> {
     return await this.coinModel.findOne({ _id: input, deletedAt: null }).exec();
   }
+
+  async seederRemove(): Promise<void> {
+    await this.coinModel.deleteMany();
+  }
+
+  async seederInsert(input: Coin[]): Promise<void> {
+    await this.coinModel.create(input);
+  }
 }
