@@ -12,3 +12,9 @@ export interface IUpdateOneUserRefreshTokenInput {
   _id: string;
   refreshToken: string;
 }
+
+export interface IUpdateOneUserBalanceInput {
+  _id: string;
+  balanceUSD: number;
+  balanceTHB: number;
+}

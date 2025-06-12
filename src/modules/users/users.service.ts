@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   ICreateOneUserInput,
+  IUpdateOneUserBalanceInput,
   IUpdateOneUserRefreshTokenInput,
 } from 'src/interfaces/user.interface';
 import { User, UserDocument } from 'src/schemas/user.schema';
@@ -66,6 +67,20 @@ export class UsersService {
       .findOneAndUpdate(
         { _id, deletedAt: null },
         { refreshToken, updatedAt: new Date() },
+      )
+      .exec();
+  }
+
+  async updateOneUserBalance(input: IUpdateOneUserBalanceInput): Promise<void> {
+    const { _id, balanceUSD, balanceTHB } = input;
+    await this.userModel
+      .findOneAndUpdate(
+        { _id, deletedAt: null },
+        {
+          ...(balanceUSD && { balanceUSD }),
+          ...(balanceTHB && { balanceTHB }),
+          updatedAt: new Date(),
+        },
       )
       .exec();
   }

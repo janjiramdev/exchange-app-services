@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { Coin } from './coin.schema';
-import { User } from './user.schema';
+import { CoinDocument } from './coin.schema';
+import { UserDocument } from './user.schema';
 
 @Schema({ collection: 'pockets' })
 export class Pocket {
@@ -12,7 +12,7 @@ export class Pocket {
     nullable: false,
     ref: 'User',
   })
-  user: User;
+  user: UserDocument;
 
   @Prop({
     type: Types.ObjectId,
@@ -21,7 +21,7 @@ export class Pocket {
     nullable: false,
     ref: 'Coin',
   })
-  coin: Coin;
+  coin: CoinDocument;
 
   @Prop({
     type: Number,

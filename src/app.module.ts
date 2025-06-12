@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
+import { BalanceModule } from './modules/balance/balance.module';
 import { CoinsModule } from './modules/coins/coins.module';
 import { PocketsModule } from './modules/pockets/pockets.module';
+import { SalesModule } from './modules/sales/sales.module';
 import { SystemModule } from './modules/system/system.module';
 import { UsersModule } from './modules/users/users.module';
 import systemConfig from './configs/system';
@@ -22,8 +24,10 @@ import systemConfig from './configs/system';
       inject: [ConfigService],
     }),
     AuthModule,
+    BalanceModule,
     CoinsModule,
     PocketsModule,
+    SalesModule,
     SystemModule,
     UsersModule,
   ],

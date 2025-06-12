@@ -9,9 +9,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreatePocketDto } from './dtos/create-pocket.dto';
 import { CoinsService } from '../coins/coins.service';
+import { UpdatePocketDto } from './dtos/update-pocket.dto';
+import { IFindOneByUserIdAndCoinId } from 'src/interfaces/pocket.interface';
 import { IUserInterface } from 'src/interfaces/user.interface';
 import { Pocket, PocketDocument } from 'src/schemas/pocket.schema';
-import { UpdatePocketDto } from './dtos/update-pocket.dto';
 
 @Injectable()
 export class PocketsService {
@@ -100,5 +101,26 @@ export class PocketsService {
       else this.logger.error(`Error: ${JSON.stringify(error)}`);
       throw error;
     }
+  }
+
+  async findOneById(input: string): Promise<PocketDocument | null | undefined> {
+    return await this.pocketModel
+      .findOne({ _id: input, deletedAt: null })
+      .populate('user')
+      .exec();
+  }
+
+  async findOneByUserIdAndCoinId(
+    input: IFindOneByUserIdAndCoinId,
+  ): Promise<PocketDocument | null | undefined> {
+    const { userId, coinId } = input;
+    return await this.pocketModel
+      .findOne({
+        user: new Types.ObjectId(userId),
+        coin: new Types.ObjectId(coinId),
+        deletedAt: null,
+      })
+      .populate('user')
+      .exec();
   }
 }
